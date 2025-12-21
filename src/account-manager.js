@@ -205,6 +205,21 @@ export class AccountManager {
     }
 
     /**
+     * Clear all rate limits to force a fresh check
+     * (Optimistic retry strategy)
+     */
+    resetAllRateLimits() {
+        for (const account of this.#accounts) {
+            account.isRateLimited = false;
+            // distinct from "clearing" expired limits, we blindly reset here
+            // we keep the time? User said "clear isRateLimited value, and rateLimitResetTime"
+            // So we clear both.
+            account.rateLimitResetTime = null;
+        }
+        console.log('[AccountManager] Reset all rate limits for optimistic retry');
+    }
+
+    /**
      * Pick the next available account (round-robin)
      */
     pickNext() {

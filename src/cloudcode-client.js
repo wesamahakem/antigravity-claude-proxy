@@ -111,12 +111,21 @@ function parseResetTime(responseOrError, errorText = '') {
     if (!resetMs) {
         const msg = (responseOrError instanceof Error ? responseOrError.message : errorText) || '';
 
-        // Try to extract "retry-after-ms" or "retryDelay" in ms
-        const msMatch = msg.match(/retry[-_]?after[-_]?ms[:\s"]+(\d+)/i) ||
-                        msg.match(/retryDelay[:\s"]+(\d+)/i);
-        if (msMatch) {
-            resetMs = parseInt(msMatch[1], 10);
-            console.log(`[CloudCode] Parsed retry-after-ms from body: ${resetMs}ms`);
+        // Try to extract "retry-after-ms" or "retryDelay" - check seconds format first (e.g. "7739.23s")
+        const secMatch = msg.match(/(?:retry[-_]?after[-_]?ms|retryDelay)[:\s"]+([\d\.]+)(?:s\b|s")/i);
+        if (secMatch) {
+            resetMs = Math.ceil(parseFloat(secMatch[1]) * 1000);
+            console.log(`[CloudCode] Parsed retry seconds from body (precise): ${resetMs}ms`);
+        }
+
+        if (!resetMs) {
+            // Check for ms (explicit "ms" suffix or implicit if no suffix)
+            // Rejects "s" suffix or floats (handled above)
+            const msMatch = msg.match(/(?:retry[-_]?after[-_]?ms|retryDelay)[:\s"]+(\d+)(?:\s*ms)?(?![\w.])/i);
+            if (msMatch) {
+                resetMs = parseInt(msMatch[1], 10);
+                console.log(`[CloudCode] Parsed retry-after-ms from body: ${resetMs}ms`);
+            }
         }
 
         // Try to extract seconds value like "retry after 60 seconds"
@@ -226,7 +235,11 @@ export async function sendMessage(anthropicRequest, accountManager) {
     const isThinkingModel = model.toLowerCase().includes('thinking');
 
     // Retry loop with account failover
-    for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
+    // Ensure we try at least as many times as there are accounts to cycle through everyone
+    // +1 to ensure we hit the "all accounts rate-limited" check at the start of the next loop
+    const maxAttempts = Math.max(MAX_RETRIES, accountManager.getAccountCount() + 1);
+
+    for (let attempt = 0; attempt < maxAttempts; attempt++) {
         // Get next available account
         let account = accountManager.pickNext();
 
@@ -234,6 +247,14 @@ export async function sendMessage(anthropicRequest, accountManager) {
         if (!account) {
             if (accountManager.isAllRateLimited()) {
                 const waitMs = accountManager.getMinWaitTimeMs();
+                const resetTime = new Date(Date.now() + waitMs).toISOString();
+
+                // If wait time is too long (> 2 minutes), throw error immediately
+                if (waitMs > 120000) {
+                    throw new Error(
+                        `RESOURCE_EXHAUSTED: Rate limited. Quota will reset after ${formatDuration(waitMs)}. Next available: ${resetTime}`
+                    );
+                }
 
                 if (accountManager.getAccountCount() === 1) {
                     // Single account mode: wait for reset
@@ -243,7 +264,6 @@ export async function sendMessage(anthropicRequest, accountManager) {
                     account = accountManager.pickNext();
                 } else {
                     // Multi-account: all exhausted - throw proper error
-                    const resetTime = new Date(Date.now() + waitMs).toISOString();
                     throw new Error(
                         `RESOURCE_EXHAUSTED: All ${accountManager.getAccountCount()} accounts rate-limited. ` +
                         `quota will reset after ${formatDuration(waitMs)}. Next available: ${resetTime}`
@@ -468,7 +488,11 @@ export async function* sendMessageStream(anthropicRequest, accountManager) {
     const model = mapModelName(anthropicRequest.model);
 
     // Retry loop with account failover
-    for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
+    // Ensure we try at least as many times as there are accounts to cycle through everyone
+    // +1 to ensure we hit the "all accounts rate-limited" check at the start of the next loop
+    const maxAttempts = Math.max(MAX_RETRIES, accountManager.getAccountCount() + 1);
+
+    for (let attempt = 0; attempt < maxAttempts; attempt++) {
         // Get next available account
         let account = accountManager.pickNext();
 
@@ -476,6 +500,14 @@ export async function* sendMessageStream(anthropicRequest, accountManager) {
         if (!account) {
             if (accountManager.isAllRateLimited()) {
                 const waitMs = accountManager.getMinWaitTimeMs();
+                const resetTime = new Date(Date.now() + waitMs).toISOString();
+
+                // If wait time is too long (> 2 minutes), throw error immediately
+                if (waitMs > 120000) {
+                    throw new Error(
+                        `RESOURCE_EXHAUSTED: Rate limited. Quota will reset after ${formatDuration(waitMs)}. Next available: ${resetTime}`
+                    );
+                }
 
                 if (accountManager.getAccountCount() === 1) {
                     // Single account mode: wait for reset
@@ -485,7 +517,6 @@ export async function* sendMessageStream(anthropicRequest, accountManager) {
                     account = accountManager.pickNext();
                 } else {
                     // Multi-account: all exhausted - throw proper error
-                    const resetTime = new Date(Date.now() + waitMs).toISOString();
                     throw new Error(
                         `RESOURCE_EXHAUSTED: All ${accountManager.getAccountCount()} accounts rate-limited. ` +
                         `quota will reset after ${formatDuration(waitMs)}. Next available: ${resetTime}`

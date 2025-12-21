@@ -55,8 +55,8 @@ function parseError(error) {
         statusCode = 401;
         errorMessage = 'Authentication failed. Make sure Antigravity is running with a valid token.';
     } else if (error.message.includes('429') || error.message.includes('RESOURCE_EXHAUSTED') || error.message.includes('QUOTA_EXHAUSTED')) {
-        errorType = 'overloaded_error';  // Claude Code recognizes this type
-        statusCode = 529;  // Use 529 for overloaded (Claude API convention)
+        errorType = 'invalid_request_error';  // Use invalid_request_error to force client to purge/stop
+        statusCode = 400;  // Use 400 to ensure client does not retry (429 and 529 trigger retries)
 
         // Try to extract the quota reset time from the error
         const resetMatch = error.message.match(/quota will reset after (\d+h\d+m\d+s|\d+m\d+s|\d+s)/i);
@@ -190,6 +190,9 @@ app.post('/v1/messages', async (req, res) => {
     try {
         // Ensure account manager is initialized
         await ensureInitialized();
+
+        // Optimistic Retry: Reset all local rate limits to force a fresh check on Google's side
+        accountManager.resetAllRateLimits();
 
         const {
             model,
