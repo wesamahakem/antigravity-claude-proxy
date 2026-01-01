@@ -84,7 +84,7 @@ async function main() {
       // Pass remaining args to accounts CLI
       const subCommand = args[1] || 'add';
       process.argv = ['node', 'accounts-cli.js', subCommand, ...args.slice(2)];
-      await import('../src/accounts-cli.js');
+      await import('../src/cli/accounts.js');
       break;
     }
 
