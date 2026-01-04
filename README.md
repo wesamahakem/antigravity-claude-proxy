@@ -84,6 +84,21 @@ npm run accounts:add
 
 This opens your browser for Google OAuth. Sign in and authorize access. Repeat for multiple accounts.
 
+**Headless Servers (Docker, SSH, no desktop):**
+
+```bash
+# Use --no-browser mode for servers without a browser
+antigravity-claude-proxy accounts add --no-browser
+
+# Or with npx
+npx antigravity-claude-proxy accounts add -- --no-browser
+
+# Or if cloned locally
+npm run accounts:add -- --no-browser
+```
+
+This displays an OAuth URL you can open on another device (phone/laptop). After signing in, copy the redirect URL or authorization code and paste it back into the terminal.
+
 Manage accounts:
 
 ```bash

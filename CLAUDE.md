@@ -29,6 +29,7 @@ npm run dev
 # Account management
 npm run accounts         # Interactive account management
 npm run accounts:add     # Add a new Google account via OAuth
+npm run accounts:add -- --no-browser  # Add account on headless server (manual code input)
 npm run accounts:list    # List configured accounts
 npm run accounts:verify  # Verify account tokens are valid
 
@@ -43,6 +44,7 @@ npm run test:interleaved   # Interleaved thinking
 npm run test:images        # Image processing
 npm run test:caching       # Prompt caching
 npm run test:crossmodel    # Cross-model thinking signatures
+npm run test:oauth         # OAuth no-browser mode
 ```
 
 ## Architecture
