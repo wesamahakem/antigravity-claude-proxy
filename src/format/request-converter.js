@@ -9,7 +9,7 @@ import {
     isThinkingModel
 } from '../constants.js';
 import { convertContentToParts, convertRole } from './content-converter.js';
-import { sanitizeSchema, cleanSchemaForGemini } from './schema-sanitizer.js';
+import { sanitizeSchema, cleanSchema } from './schema-sanitizer.js';
 import {
     restoreThinkingSignatures,
     removeTrailingThinkingBlocks,
@@ -214,7 +214,7 @@ export function convertAnthropicToGoogle(anthropicRequest) {
             // Cloud Code API which validates schemas using Google's protobuf format.
             // This fixes issue #82: /compact command fails with schema transformation error
             // "Proto field is not repeating, cannot start list" for Claude models.
-            parameters = cleanSchemaForGemini(parameters);
+            parameters = cleanSchema(parameters);
 
             return {
                 name: String(name).replace(/[^a-zA-Z0-9_-]/g, '_').slice(0, 64),

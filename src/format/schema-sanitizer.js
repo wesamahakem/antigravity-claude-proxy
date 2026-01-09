@@ -592,9 +592,9 @@ function toGoogleType(type) {
  * @param {Object} schema - The JSON schema to clean
  * @returns {Object} Cleaned schema safe for Gemini API
  */
-export function cleanSchemaForGemini(schema) {
+export function cleanSchema(schema) {
     if (!schema || typeof schema !== 'object') return schema;
-    if (Array.isArray(schema)) return schema.map(cleanSchemaForGemini);
+    if (Array.isArray(schema)) return schema.map(cleanSchema);
 
     // Phase 1: Convert $refs to hints
     let result = convertRefsToHints(schema);
@@ -641,16 +641,16 @@ export function cleanSchemaForGemini(schema) {
     if (result.properties && typeof result.properties === 'object') {
         const newProps = {};
         for (const [key, value] of Object.entries(result.properties)) {
-            newProps[key] = cleanSchemaForGemini(value);
+            newProps[key] = cleanSchema(value);
         }
         result.properties = newProps;
     }
 
     if (result.items) {
         if (Array.isArray(result.items)) {
-            result.items = result.items.map(cleanSchemaForGemini);
+            result.items = result.items.map(cleanSchema);
         } else if (typeof result.items === 'object') {
-            result.items = cleanSchemaForGemini(result.items);
+            result.items = cleanSchema(result.items);
         }
     }
 
@@ -664,7 +664,7 @@ export function cleanSchemaForGemini(schema) {
     }
 
     // Phase 5: Convert type to Google's uppercase format (STRING, OBJECT, ARRAY, etc.)
-    // Only convert at current level - nested types already converted by recursive cleanSchemaForGemini calls
+    // Only convert at current level - nested types already converted by recursive cleanSchema calls
     if (result.type && typeof result.type === 'string') {
         result.type = toGoogleType(result.type);
     }
