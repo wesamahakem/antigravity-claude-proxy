@@ -241,7 +241,7 @@
                 <!-- Time Range Dropdown -->
                 <div class="relative flex-1 sm:flex-none">
                     <button @click="showTimeRangeDropdown = !showTimeRangeDropdown; showDisplayModeDropdown = false; showModelFilter = false"
-                        class="flex items-center justify-center gap-2 px-3 py-1.5 lg:px-4 lg:py-2 text-[10px] lg:text-xs font-mono font-medium text-gray-400 bg-space-800 lg:bg-transparent border border-space-border/50 lg:border-transparent rounded lg:rounded-md hover:text-white lg:hover:bg-space-800 hover:border-neon-cyan/50 lg:hover:border-neon-cyan/30 lg:hover:shadow-lg lg:hover:shadow-neon-cyan/10 transition-all duration-200 whitespace-nowrap w-full sm:w-auto">
+                        class="filter-control">
                         <svg class="w-3.5 h-3.5 lg:w-4 lg:h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -259,19 +259,19 @@
                         x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95"
                         class="absolute right-0 mt-1 w-36 bg-space-900 border border-space-border rounded-lg shadow-xl z-50 overflow-hidden py-1"
                         style="display: none;">
-                        <button @click="setTimeRange('1h')" class="w-full px-3 py-1.5 text-left text-[10px] font-mono hover:bg-white/5 transition-colors"
+                        <button @click="setTimeRange('1h')" class="filter-control-item"
                             :class="timeRange === '1h' ? 'text-neon-cyan' : 'text-gray-400'"
                             x-text="$store.global.t('last1Hour')"></button>
-                        <button @click="setTimeRange('6h')" class="w-full px-3 py-1.5 text-left text-[10px] font-mono hover:bg-white/5 transition-colors"
+                        <button @click="setTimeRange('6h')" class="filter-control-item"
                             :class="timeRange === '6h' ? 'text-neon-cyan' : 'text-gray-400'"
                             x-text="$store.global.t('last6Hours')"></button>
-                        <button @click="setTimeRange('24h')" class="w-full px-3 py-1.5 text-left text-[10px] font-mono hover:bg-white/5 transition-colors"
+                        <button @click="setTimeRange('24h')" class="filter-control-item"
                             :class="timeRange === '24h' ? 'text-neon-cyan' : 'text-gray-400'"
                             x-text="$store.global.t('last24Hours')"></button>
-                        <button @click="setTimeRange('7d')" class="w-full px-3 py-1.5 text-left text-[10px] font-mono hover:bg-white/5 transition-colors"
+                        <button @click="setTimeRange('7d')" class="filter-control-item"
                             :class="timeRange === '7d' ? 'text-neon-cyan' : 'text-gray-400'"
                             x-text="$store.global.t('last7Days')"></button>
-                        <button @click="setTimeRange('all')" class="w-full px-3 py-1.5 text-left text-[10px] font-mono hover:bg-white/5 transition-colors"
+                        <button @click="setTimeRange('all')" class="filter-control-item"
                             :class="timeRange === 'all' ? 'text-neon-cyan' : 'text-gray-400'"
                             x-text="$store.global.t('allTime')"></button>
                     </div>
