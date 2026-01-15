@@ -71,7 +71,7 @@ app.listen(PORT, () => {
 ║           Antigravity Claude Proxy Server                    ║
 ╠══════════════════════════════════════════════════════════════╣
 ║                                                              ║
-${border}  ${align(`Server running at: http://localhost:${PORT}`)}${border}
+${border}  ${align(`Server and WebUI running at: http://localhost:${PORT}`)}${border}
 ${statusSection}║                                                              ║
 ${controlSection}
 ║                                                              ║
