@@ -13,6 +13,7 @@ document.addEventListener('alpine:init', () => {
         modelConfig: {}, // Model metadata (hidden, pinned, alias)
         quotaRows: [], // Filtered view
         usageHistory: {}, // Usage statistics history (from /account-limits?includeHistory=true)
+        maxAccounts: 10, // Maximum number of accounts allowed (from config)
         loading: false,
         initialLoad: true, // Track first load for skeleton screen
         connectionStatus: 'connecting',
@@ -132,6 +133,24 @@ document.addEventListener('alpine:init', () => {
             } finally {
                 this.loading = false;
                 this.initialLoad = false; // Mark initial load as complete
+            }
+        },
+
+        async fetchVersion(password) {
+            try {
+                const { response } = await window.utils.request('/api/config', {}, password);
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.version) {
+                        Alpine.store('global').version = data.version;
+                    }
+                    // Store maxAccounts from config
+                    if (data.config && typeof data.config.maxAccounts === 'number') {
+                        this.maxAccounts = data.config.maxAccounts;
+                    }
+                }
+            } catch (error) {
+                console.warn('Failed to fetch version:', error);
             }
         },
 
