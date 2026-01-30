@@ -12,6 +12,10 @@ window.Components.claudeConfig = () => ({
     restoring: false,
     gemini1mSuffix: false,
 
+    // Mode toggle state (proxy/paid)
+    currentMode: 'proxy', // 'proxy' or 'paid'
+    modeLoading: false,
+
     // Presets state
     presets: [],
     selectedPresetName: '',
@@ -34,6 +38,7 @@ window.Components.claudeConfig = () => ({
         if (this.activeTab === 'claude') {
             this.fetchConfig();
             this.fetchPresets();
+            this.fetchMode();
         }
 
         // Watch local activeTab (from parent settings scope, skip initial trigger)
@@ -41,6 +46,7 @@ window.Components.claudeConfig = () => ({
             if (tab === 'claude' && oldTab !== undefined) {
                 this.fetchConfig();
                 this.fetchPresets();
+                this.fetchMode();
             }
         });
 
@@ -415,6 +421,71 @@ window.Components.claudeConfig = () => ({
             Alpine.store('global').showToast(Alpine.store('global').t('failedToDeletePreset') + ': ' + e.message, 'error');
         } finally {
             this.deletingPreset = false;
+        }
+    },
+
+    // ==========================================
+    // Mode Toggle (Proxy/Paid)
+    // ==========================================
+
+    /**
+     * Fetch current mode from server
+     */
+    async fetchMode() {
+        const password = Alpine.store('global').webuiPassword;
+        try {
+            const { response, newPassword } = await window.utils.request('/api/claude/mode', {}, password);
+            if (newPassword) Alpine.store('global').webuiPassword = newPassword;
+
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            const data = await response.json();
+            if (data.status === 'ok') {
+                this.currentMode = data.mode;
+            }
+        } catch (e) {
+            console.error('Failed to fetch mode:', e);
+        }
+    },
+
+    /**
+     * Toggle between proxy and paid mode
+     * @param {string} newMode - Target mode ('proxy' or 'paid')
+     */
+    async toggleMode(newMode) {
+        if (this.modeLoading || newMode === this.currentMode) return;
+
+        this.modeLoading = true;
+        const password = Alpine.store('global').webuiPassword;
+
+        try {
+            const { response, newPassword } = await window.utils.request('/api/claude/mode', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ mode: newMode })
+            }, password);
+            if (newPassword) Alpine.store('global').webuiPassword = newPassword;
+
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            const data = await response.json();
+
+            if (data.status === 'ok') {
+                this.currentMode = data.mode;
+                this.config = data.config || this.config;
+                Alpine.store('global').showToast(data.message, 'success');
+
+                // Refresh the config and mode state
+                await this.fetchConfig();
+                await this.fetchMode();
+            } else {
+                throw new Error(data.error || 'Failed to switch mode');
+            }
+        } catch (e) {
+            Alpine.store('global').showToast(
+                (Alpine.store('global').t('modeToggleFailed') || 'Failed to switch mode') + ': ' + e.message,
+                'error'
+            );
+        } finally {
+            this.modeLoading = false;
         }
     }
 });
