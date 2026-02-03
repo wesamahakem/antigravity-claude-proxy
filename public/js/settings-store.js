@@ -6,7 +6,8 @@ document.addEventListener('alpine:init', () => {
         refreshInterval: 60,
         logLimit: 2000,
         showExhausted: true,
-        showHiddenModels: false, // New field
+        showHiddenModels: false,
+        showAllAccounts: false,
         compact: false,
         port: 8080, // Display only
 
@@ -39,6 +40,7 @@ document.addEventListener('alpine:init', () => {
                 logLimit: this.logLimit,
                 showExhausted: this.showExhausted,
                 showHiddenModels: this.showHiddenModels,
+                showAllAccounts: this.showAllAccounts,
                 compact: this.compact
             };
             localStorage.setItem('antigravity_settings', JSON.stringify(toSave));
