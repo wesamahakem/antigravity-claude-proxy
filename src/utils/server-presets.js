@@ -156,9 +156,10 @@ export async function updateServerPreset(currentName, updates) {
         for (const key of allowedKeys) {
             if (updates.config[key] !== undefined) {
                 if (key === 'accountSelection') {
+                    const updateAS = updates.config.accountSelection;
+                    if (!updateAS || typeof updateAS !== 'object') continue;
                     // Deep merge accountSelection sub-objects to preserve fields not in partial update
                     const existingAS = existing.accountSelection || {};
-                    const updateAS = updates.config.accountSelection;
                     existing.accountSelection = { ...existingAS };
                     if (updateAS.strategy !== undefined) existing.accountSelection.strategy = updateAS.strategy;
                     for (const subKey of ['healthScore', 'tokenBucket', 'quota', 'weights']) {
