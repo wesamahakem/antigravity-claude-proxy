@@ -1,6 +1,4 @@
-<div x-data="{
-    activeTab: 'ui'
-}" class="view-container-centered">
+<div x-data class="view-container-centered">
     <!-- Header & Tabs -->
     <div class="view-card !p-0 flex flex-col overflow-hidden">
         <div class="bg-space-900/50 border-b border-space-border px-8 pt-8 pb-0 shrink-0">
@@ -17,9 +15,9 @@
             </div>
 
             <div class="flex gap-6 overflow-x-auto">
-                <button @click="activeTab = 'ui'"
+                <button @click="$store.global.settingsTab = 'ui'"
                     class="pb-3 border-b-2 transition-colors font-medium text-sm flex items-center gap-2 whitespace-nowrap"
-                    :class="activeTab === 'ui' ? 'border-neon-purple text-white' : 'border-transparent text-gray-500 hover:text-gray-300'">
+                    :class="$store.global.settingsTab === 'ui' ? 'border-neon-purple text-white' : 'border-transparent text-gray-500 hover:text-gray-300'">
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24"
                         stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -27,9 +25,9 @@
                     </svg>
                     <span x-text="$store.global.t('tabInterface')">Interface</span>
                 </button>
-                <button @click="activeTab = 'claude'"
+                <button @click="$store.global.settingsTab = 'claude'"
                     class="pb-3 border-b-2 transition-colors font-medium text-sm flex items-center gap-2 whitespace-nowrap"
-                    :class="activeTab === 'claude' ? 'border-neon-purple text-white' : 'border-transparent text-gray-500 hover:text-gray-300'">
+                    :class="$store.global.settingsTab === 'claude' ? 'border-neon-purple text-white' : 'border-transparent text-gray-500 hover:text-gray-300'">
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24"
                         stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -37,9 +35,9 @@
                     </svg>
                     <span x-text="$store.global.t('tabClaude')">Claude CLI</span>
                 </button>
-                <button @click="activeTab = 'models'"
+                <button @click="$store.global.settingsTab = 'models'"
                     class="pb-3 border-b-2 transition-colors font-medium text-sm flex items-center gap-2 whitespace-nowrap"
-                    :class="activeTab === 'models' ? 'border-neon-purple text-white' : 'border-transparent text-gray-500 hover:text-gray-300'">
+                    :class="$store.global.settingsTab === 'models' ? 'border-neon-purple text-white' : 'border-transparent text-gray-500 hover:text-gray-300'">
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24"
                         stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -47,9 +45,9 @@
                     </svg>
                     <span x-text="$store.global.t('tabModels')">Models</span>
                 </button>
-                <button @click="activeTab = 'server'"
+                <button @click="$store.global.settingsTab = 'server'"
                     class="pb-3 border-b-2 transition-colors font-medium text-sm flex items-center gap-2 whitespace-nowrap"
-                    :class="activeTab === 'server' ? 'border-neon-purple text-white' : 'border-transparent text-gray-500 hover:text-gray-300'">
+                    :class="$store.global.settingsTab === 'server' ? 'border-neon-purple text-white' : 'border-transparent text-gray-500 hover:text-gray-300'">
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24"
                         stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -64,7 +62,7 @@
         <div class="p-8 overflow-y-auto flex-1 custom-scrollbar">
 
             <!-- Tab 1: UI Preferences -->
-            <div x-show="activeTab === 'ui'" class="space-y-8 animate-fade-in">
+            <div x-show="$store.global.settingsTab === 'ui'" class="space-y-8 animate-fade-in">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <!-- Language -->
                     <div class="form-control">
@@ -182,7 +180,7 @@
             </div>
 
             <!-- Tab 2: Claude CLI Configuration -->
-            <div x-show="activeTab === 'claude'" x-data="claudeConfig" class="space-y-6 animate-fade-in">
+            <div x-show="$store.global.settingsTab === 'claude'" x-data="claudeConfig" class="space-y-6 animate-fade-in">
                 <div class="alert bg-space-900/50 border-space-border text-sm shadow-none">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                         class="stroke-info shrink-0 w-6 h-6">
@@ -872,7 +870,7 @@
             </div>
 
             <!-- Tab 3: Models Configuration -->
-            <div x-show="activeTab === 'models'" x-data="window.Components.models()"
+            <div x-show="$store.global.settingsTab === 'models'" x-data="window.Components.models()"
                 class="space-y-6 animate-fade-in">
 
                 <div class="flex items-center justify-between">
@@ -1042,7 +1040,7 @@
             </div>
 
             <!-- Tab 4: Server Configuration -->
-            <div x-show="activeTab === 'server'" x-data="window.Components.serverConfig()"
+            <div x-show="$store.global.settingsTab === 'server'" x-data="window.Components.serverConfig()"
                 class="space-y-6 animate-fade-in pb-10">
                 <!-- 🔐 Security Section -->
                 <div class="view-card border-neon-yellow/20 bg-neon-yellow/5">
