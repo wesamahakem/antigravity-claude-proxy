@@ -503,4 +503,6 @@ window.translations.id = {
     weightTokens: "Bobot Token",
     weightQuota: "Bobot Kuota",
     weightLru: "Bobot LRU",
+    // Dropdown Model
+    clearSelection: "Hapus pilihan",
 };

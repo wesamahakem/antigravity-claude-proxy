@@ -329,7 +329,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <template x-for="acc in healthData.trackers.accounts" :key="acc.email">
+                            <template x-for="acc in (healthData.trackers?.accounts || [])" :key="acc.email">
                                 <tr class="border-b border-space-border/20 last:border-0">
                                     <td class="py-2">
                                         <span class="text-xs font-mono text-gray-300" x-text="Redact.email(acc.email)"></span>

@@ -459,4 +459,6 @@ window.translations.en = {
     weightTokens: "Tokens Weight",
     weightQuota: "Quota Weight",
     weightLru: "LRU Weight",
+    // Model Dropdown
+    clearSelection: "Clear selection",
 };

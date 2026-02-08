@@ -449,4 +449,6 @@ window.translations.tr = {
     weightTokens: "Token Ağırlığı",
     weightQuota: "Kota Ağırlığı",
     weightLru: "LRU Ağırlığı",
+    // Model Açılır Menüsü
+    clearSelection: "Seçimi temizle",
 };

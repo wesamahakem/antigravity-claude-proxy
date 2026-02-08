@@ -464,4 +464,6 @@ window.translations.zh = {
     weightTokens: "令牌权重",
     weightQuota: "配额权重",
     weightLru: "LRU 权重",
+    // 模型下拉菜单
+    clearSelection: "清除选择",
 };

@@ -399,4 +399,6 @@ window.translations.pt = {
     weightTokens: "Peso Tokens",
     weightQuota: "Peso Cota",
     weightLru: "Peso LRU",
+    // Dropdown de Modelo
+    clearSelection: "Limpar seleção",
 };

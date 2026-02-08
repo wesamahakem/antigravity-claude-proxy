@@ -31,13 +31,13 @@ window.Components.serverConfig = () => ({
 
     init() {
         // Initial fetch if this is the active sub-tab
-        if (this.activeTab === 'server') {
+        if (this.$store.global.settingsTab === 'server') {
             this.fetchServerConfig();
             this.fetchServerPresets();
         }
 
-        // Watch local activeTab (from parent settings scope, skip initial trigger)
-        this.$watch('activeTab', (tab, oldTab) => {
+        // Watch settings sub-tab (skip initial trigger)
+        this.$watch('$store.global.settingsTab', (tab, oldTab) => {
             if (tab === 'server' && oldTab !== undefined) {
                 this.fetchServerConfig();
                 this.fetchServerPresets();
