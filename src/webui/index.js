@@ -928,11 +928,16 @@ export function mountWebUI(app, dirname, accountManager) {
             if (!name || typeof name !== 'string' || !name.trim()) {
                 return res.status(400).json({ status: 'error', error: 'Preset name is required' });
             }
-            if (!presetConfig || typeof presetConfig !== 'object') {
+            if (!presetConfig || typeof presetConfig !== 'object' || Array.isArray(presetConfig)) {
                 return res.status(400).json({ status: 'error', error: 'Config object is required' });
             }
 
-            const presets = await saveServerPreset(name.trim(), presetConfig, description);
+            const validatedConfig = validateConfigFields(presetConfig);
+            if (Object.keys(validatedConfig).length === 0) {
+                return res.status(400).json({ status: 'error', error: 'No valid config fields provided' });
+            }
+
+            const presets = await saveServerPreset(name.trim(), validatedConfig, description);
             res.json({ status: 'ok', presets, message: `Server preset "${name}" saved` });
         } catch (error) {
             const status = error.message.includes('built-in') ? 400 : 500;
