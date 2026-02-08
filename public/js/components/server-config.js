@@ -205,8 +205,8 @@ window.Components.serverConfig = () => ({
         if (validator) {
             const validation = window.Validators.validate(value, validator, true);
             if (!validation.isValid) {
-                // Rollback to previous value
-                this.serverConfig[fieldName] = this.serverConfig[fieldName];
+                // Rollback to clamped value
+                this.serverConfig[fieldName] = validation.value;
                 return;
             }
             value = validation.value;
@@ -623,7 +623,8 @@ window.Components.serverConfig = () => ({
         }
 
         const store = Alpine.store('global');
-        const confirmMsg = store.t('deletePresetConfirm', { name: this.selectedServerPreset });
+        const translated = store.t('deletePresetConfirm', { name: this.selectedServerPreset });
+        const confirmMsg = translated === 'deletePresetConfirm' ? `Delete preset "${this.selectedServerPreset}"?` : translated;
         if (!confirm(confirmMsg)) return;
 
         this.deletingServerPreset = true;
